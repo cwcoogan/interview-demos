@@ -9,9 +9,6 @@ function Type({ customText }) {
 
   return (
     <div className='flex items-center justify-right'>
-      <div className='ml-5'>
-        Type
-      </div>
       <div className='ml-[10%]'>
         Multi-Select
         <label className='ml-5'>

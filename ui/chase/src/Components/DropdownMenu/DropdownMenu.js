@@ -10,7 +10,7 @@ function DropdownMenu({options, onSelect }) {
 
     return (
         <div>
-        <select className=' border-gray-200 border-2 rounded-md' value={selectedValue} onChange={handleSelectedChange}>
+        <select className=' border-gray-200 border-2 rounded-md mt-[10%]' value={selectedValue} onChange={handleSelectedChange}>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -20,5 +20,6 @@ function DropdownMenu({options, onSelect }) {
       </div>
     );
 }
+/* Still need to split bg colors white/gray for dropdown vs non*/
 
 export default DropdownMenu

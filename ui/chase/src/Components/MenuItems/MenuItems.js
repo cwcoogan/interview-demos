@@ -4,7 +4,6 @@ function MenuItems() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
 
-  
   const options = [
     'Option 1',
     'Option 2',
@@ -21,7 +20,7 @@ function MenuItems() {
   };
 
   return (
-    <div className="dropdown-menu border-gray-300 border-2 rounded-md">
+    <div className="border-gray-300 border-2 rounded-md">
       <input
         type="text"
         readOnly
@@ -30,9 +29,9 @@ function MenuItems() {
         placeholder="Set to Default Value"
       />
       {isMenuOpen && (
-        <ul className="dropdown-menu">
+        <ul className="absolute z-10 bg-white border-solid border-gray-300 border-x-2 border-b-2 w-[9.9%]">
           {options.map((option, index) => (
-            <li key={index} onClick={() => handleOptionSelect(option)}>
+            <li className='hover:bg-gray-200'key={index} onClick={() => handleOptionSelect(option)}>
               {option}
             </li>
           ))}

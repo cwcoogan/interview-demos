@@ -6,6 +6,7 @@ import MenuItems from './Components/MenuItems/MenuItems';
 import DefaultValue from './Components/DefaultValue/DefaultValue';
 import Type from './Components/Type/Type';
 import InputBox from './Components/InputBox/InputBox';
+import Label from './Components/Labels/Labels';
 
 
 function App() {
@@ -43,13 +44,43 @@ function App() {
 
   return (
     // this div handles the entire screen 
-    <div className='justify-center items-center mx-auto w-1/2 mt-20 h-[650px] border-blue-200 border-2 rounded-lg'>
-      <div className='relative w-full h-[100px] bg-blue-200 opacity-2 rounded-lg'>
+    <div className='justify-center items-center mx-auto w-[30%] mt-20 h-[300px] border-blue-200 border-2 rounded-lg'>
+      <div className='relative w-full h-[15%] bg-blue-200 opacity-2 rounded-lg'>
         <header className='text-cyan-700 text-lg p-2'><b>Field Builder</b></header>
       </div>
 
+      <div className='flex items-center justify-left ml-[2%]'>
+        <div className='flex flex-col items-start justify-start gap-2 mt-[-7%]'>
+          <Label text="Label" />
+          <Label text="Type" />
+          <Label text="Default Value" />
+          <Label text="Choices" />
+          <Label text="Order" />
+        </div>
 
-      <InputBox />
+        <div className='flex-col items-start justify-start ml-10'>
+          <InputBox />
+          <Type customText=" A value is required"/>
+          <DefaultValue />
+          <MenuItems />
+          <DropdownMenu options={options} onSelect={handleOrderChange} />
+
+          <div className='flex items-center justify-left mt-[10%]'>
+            <div className="ml-[5%] rounded-lg bg-green-400">
+              <CustomButton text="Save" onClick={handleButtonClick} />
+            </div>
+
+            <div className="ml-[5%] rounded-lg bg-red-400">
+              <CustomButton text="Cancel" onClick={handleButtonClick} />
+            </div>
+
+          </div>
+
+
+        </div>
+      </div>
+
+      {/* <InputBox />
       <Type customText=" A value is required" />
       <DefaultValue />
 
@@ -78,16 +109,16 @@ function App() {
 
 
 
-      <div className='flex items-center justify-left'>
-        <div className="ml-[5%] rounded-lg bg-green-400">
-          <CustomButton text="Save" onClick={handleButtonClick} />
-        </div>
+      // <div className='flex items-center justify-left'>
+      //   <div className="ml-[5%] rounded-lg bg-green-400">
+      //     <CustomButton text="Save" onClick={handleButtonClick} />
+      //   </div>
 
         <div className="ml-[5%] rounded-lg bg-red-400">
           <CustomButton text="Cancel" onClick={handleButtonClick} />
         </div>
 
-      </div>
+      </div> */}
 
 
     </div>
