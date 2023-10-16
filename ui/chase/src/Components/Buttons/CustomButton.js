@@ -1,9 +1,9 @@
 import React from 'react';
 
-function CustomButton({ text, onClick }) {
+function CustomButton({ text, onClick, className}) {
   return (
     <div>
-      <button className="custom-button px-2 py-2 md:px-3 md:py-0 text-white" onClick={onClick}>
+      <button className={"custom-button py-2 " + className} onClick={onClick}>
         <span className="rounded-lg">{text}</span>
       </button>
     </div>

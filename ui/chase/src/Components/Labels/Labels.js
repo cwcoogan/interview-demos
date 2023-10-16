@@ -2,7 +2,7 @@ import React from 'react';
 
 function Label({ text }) {
   return (
-    <label className='py-1'>{text}</label>
+    <label className='font-semibold text-lg w-full'>{text}</label>
   );
 }
 

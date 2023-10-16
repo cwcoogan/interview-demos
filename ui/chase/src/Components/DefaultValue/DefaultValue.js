@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 
-function DefaultValue() {
+function DefaultValue({color}) {
+    
 
     return(
-        <div className='h-[50px] pt-3'>
-        <label className="form-label">
+        <div className='w-full'>
+        <label className="form-label ">
           <input
-            className="form-input rounded-lg border-2 border-gray-500 opacity-10"
+            className="form-input rounded-lg border-2 border-gray-300 w-2/3 py-2"
             type="text"
             name="label"
 
