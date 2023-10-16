@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function MenuItems() {
+function MenuItems({choices, onAddChoice}) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -9,6 +9,7 @@ function MenuItems() {
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
     setMenuOpen(false);
+    onAddChoice(option);
   };
 
   return (

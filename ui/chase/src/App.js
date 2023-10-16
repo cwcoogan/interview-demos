@@ -12,6 +12,37 @@ import ConfirmButton from "./Components/Buttons/ConfirmButton/ConfirmButton";
 import RejectButton from "./Components/Buttons/RejectButton/RejectButton";
 
 function App() {
+/* handle form */
+const [formData, setFormData] = useState({
+  label: "",
+  type: "",
+  defaultValue: "",
+  choices: [],
+  order: "default",
+});
+
+const handleFormChange = (name, value) => {
+  setFormData({
+    ...formData,
+    [name]: value,
+  });
+};
+
+/* need maybe just this */
+const handleConfirmButtonClick = (data) => {
+  console.log('Data received in App:', data);
+};
+
+const handleAddChoice = (choice) => {
+  // Update choices directly in the state
+  setFormData((prevFormData) => ({
+    ...prevFormData,
+    choices: [...prevFormData.choices, choice],
+  }));
+};
+
+
+
   /* handle menu item for choices */
   const [selectedChoice, setSelectedChoice] = useState("");
 
@@ -61,13 +92,14 @@ function App() {
 
         <div className="flex items-center justify-left w-full p-2 px-5">
           <div className="flex flex-col items-start justify-start gap-y-6 w-full p-5">
-            <Field label={"Label"} inputComponent={<InputBox />} />
+            <Field label={"Label"} inputComponent={<InputBox onInputChange={(value) => handleFormChange("label", value)}/>} />
             <Field
               label={"Type"}
               inputComponent={<Type customText={"A value is required"} />}
             />
             <Field label={"Default Value"} inputComponent={<InputBox />} />
-            <Field label={"Choices"} inputComponent={<MenuItems />} />
+            <Field label={"Choices"} inputComponent={<MenuItems choices={formData.choices} onAddChoice={handleAddChoice}/>} 
+            />
             <Field
               label={"Order"}
               inputComponent={
@@ -79,7 +111,9 @@ function App() {
             <div className="flex items-center justify-start gap-5 pb-6">
               <ConfirmButton
                 text={"Save Changes"}
-                handleButtonClick={() => {}}
+                formData={formData}
+                onClick={handleConfirmButtonClick}
+                // handleButtonClick={() => {}}
               />
               <span>or</span>
               <RejectButton text={"Cancel"} handleButtonClick={() => {}} />
