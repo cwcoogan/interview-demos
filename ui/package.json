@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "@headlessui/react": "^1.7.17"
+    "@headlessui/react": "^1.7.17",
+    "js-cookie": "^3.0.5"
   },
   "devDependencies": {
     "tailwindcss": "^3.3.3"

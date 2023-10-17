@@ -9,6 +9,7 @@ import ConfirmButton from "./Components/Buttons/ConfirmButton/ConfirmButton";
 import RejectButton from "./Components/Buttons/RejectButton/RejectButton";
 import saveForm from "./Requests/utils";
 import ErrorBox from "./Components/ErrorBox/ErrorBox";
+import Cookies from "js-cookie";
 
 function App() {
   const formData = {
@@ -19,17 +20,23 @@ function App() {
     default: "",
   };
 
+  // cookies
+  let cookiesFormData = Cookies.get();
+
   const [errors, setErrors] = useState([]);
   const [initialRender, setInitialRender] = useState(true);
-  const [label, setLabel] = useState("");
+  const [label, setLabel] = useState(cookiesFormData.label); // valid cookies
   const [isLabelValid, setLabelValid] = useState(true);
-  const [isRequired, setIsRequired] = useState(false);
-  const [choices, setChoices] = useState([]);
+  const [isRequired, setIsRequired] = useState(cookiesFormData.type == "true"); // validate cookies 
+  const [choices, setChoices] = useState(cookiesFormData.choices.split(","));
   const [isChoicesValid, setValidChoices] = useState(true);
-  const [defaultValue, setDefaultValue] = useState("");
+  const [defaultValue, setDefaultValue] = useState(cookiesFormData.defaultValue);
   const [isDefaultValid, setDefaultValid] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(parseInt(cookiesFormData.option));
 
+
+  console.log(cookiesFormData.option);
+  
   const options = [
     "Display choices by Alphabetical",
     "Display choices by Input",
@@ -37,6 +44,7 @@ function App() {
 
   useEffect(() => {
     validateInput();
+    saveCookies();
   }, [label, isRequired, choices, defaultValue, selectedOption]);
 
   // validate label input
@@ -63,6 +71,18 @@ function App() {
     setErrors(errorList);
     return (errorList.length > 0);
   };
+
+
+  const saveCookies = () => {
+    Cookies.set("label", label);
+    Cookies.set("type", isRequired);
+    Cookies.set("choices", choices.join(","));
+    Cookies.set("default_value", defaultValue);
+    if ((!selectedOption === 0 && !selectedOption === 1) || selectedOption === undefined) {
+      Cookies.set("option", 0);  
+    } else 
+    Cookies.set("option", selectedOption);
+  }
 
   const clearSelection = () => {
     setLabel(" ");
