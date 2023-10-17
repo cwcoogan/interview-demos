@@ -1,11 +1,11 @@
 import React from "react";
 import CustomButton from "../CustomButton";
 
-const RejectButton = ({text, handleButtonClick}) => {
+const RejectButton = ({text, onSubmit}) => {
   return (
     <CustomButton
       className="font-bold cursor-pointer hover:text-red-400 rounded-lg bg-white text-red-500"
-      onClick={handleButtonClick}
+      onSubmit={onSubmit}
       text={text}
     />
   );

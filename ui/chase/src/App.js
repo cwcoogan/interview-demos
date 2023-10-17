@@ -1,123 +1,198 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import DropdownMenu from "./Components/DropdownMenu/DropdownMenu";
-import CustomButton from "./Components/Buttons/CustomButton";
 import MenuItems from "./Components/MenuItems/MenuItems";
-import DefaultValue from "./Components/DefaultValue/DefaultValue";
 import Type from "./Components/Type/Type";
 import InputBox from "./Components/InputBox/InputBox";
-import Label from "./Components/Labels/Labels";
 import Field from "./Components/Field/Field";
 import ConfirmButton from "./Components/Buttons/ConfirmButton/ConfirmButton";
 import RejectButton from "./Components/Buttons/RejectButton/RejectButton";
+import saveForm from "./Requests/utils";
+import ErrorBox from "./Components/ErrorBox/ErrorBox";
 
 function App() {
-/* handle form */
-const [formData, setFormData] = useState({
-  label: "",
-  type: "",
-  defaultValue: "",
-  choices: [],
-  order: "default",
-});
-
-const handleFormChange = (name, value) => {
-  setFormData({
-    ...formData,
-    [name]: value,
-  });
-};
-
-/* need maybe just this */
-const handleConfirmButtonClick = (data) => {
-  console.log('Data received in App:', data);
-};
-
-const handleAddChoice = (choice) => {
-  // Update choices directly in the state
-  setFormData((prevFormData) => ({
-    ...prevFormData,
-    choices: [...prevFormData.choices, choice],
-  }));
-};
-
-
-
-  /* handle menu item for choices */
-  const [selectedChoice, setSelectedChoice] = useState("");
-
-  const handleMenuItemClick = (choice) => {
-    setSelectedChoice(choice);
+  const formData = {
+    label: "",
+    required: false,
+    choices: [],
+    displayAlpha: true,
+    default: "",
   };
 
-  /* Handle button clicks*/
-  const handleButtonClick = () => {
-    alert("button clicked");
-  };
+  const [errors, setErrors] = useState([]);
+  const [initialRender, setInitialRender] = useState(true);
+  const [label, setLabel] = useState("");
+  const [isLabelValid, setLabelValid] = useState(true);
+  const [isRequired, setIsRequired] = useState(false);
+  const [choices, setChoices] = useState([]);
+  const [isChoicesValid, setValidChoices] = useState(true);
+  const [defaultValue, setDefaultValue] = useState("");
+  const [isDefaultValid, setDefaultValid] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(0);
 
-  /* consts for ordering */
   const options = [
-    {
-      value: "Display choices in Alphabetical",
-      label: "Display choices in Alphabetical",
-    },
-    { value: "alphabetical", label: "Alphabetical" },
-    { value: "alphabetical", label: "Alphabetical" },
-    { value: "alphabetical", label: "Alphabetical" },
-    { value: "alphabetical", label: "Alphabetical" },
-    { value: "alphabetical", label: "Alphabetical" },
+    "Display choices by Alphabetical",
+    "Display choices by Input",
   ];
 
-  const [selectedOrder, setSelectedOrder] = useState("default");
-  const [inputValue, setInputValue] = useState("");
+  useEffect(() => {
+    validateInput();
+  }, [label, isRequired, choices, defaultValue, selectedOption]);
 
-  const handleOrderChange = (value) => {
-    setSelectedOrder(value);
-    setInputValue(value);
+  // validate label input
+  const validateInput = async () => {
+    if (initialRender) {
+      return;
+    }
+    const errorList = [];
+    if (label.trim() === "" || label === null || label === undefined) {
+      setLabelValid(false);
+      errorList.push("Label is required");
+    } else setLabelValid(true);
+
+    // validate no duplications
+    if (new Set(choices).size != choices.length) {
+      setValidChoices(false);
+      errorList.push("Duplicate choices not allowed");
+    }
+    // validate 50 choice
+    else if (choices.length >= 50) {
+      setValidChoices(false);
+      errorList.push("Cannot exceed 50 choices");
+    } else setValidChoices(true);
+    setErrors(errorList);
+    return (errorList.length > 0);
   };
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+  const clearSelection = () => {
+    setLabel(" ");
+    setIsRequired(false);
+    setChoices([]);
+    setDefaultValue(" ");
+    setSelectedOption(0);
+    setLabelValid(true);
+    setDefaultValid(true);
+    setValidChoices(true);
+    setErrors([]);
+    setInitialRender(true);
   };
+
+  const handleSubmit = async () => {
+    setInitialRender(false);
+    const result = await validateInput();
+    if (result == true) {
+      return;
+    }
+    // validate edge case for < 50 choices && not in choices
+    if (!choices.includes(defaultValue) && choices.length < 50 && defaultValue.trim() != "") {
+      setInitialRender(false);
+      setChoices(old => [defaultValue, ...old]);
+      if (label.trim() === "") {
+        return;
+      }
+    }
+
+    formData.label = label;
+    formData.required = isRequired;
+    formData.choices = choices;
+    formData.displayAlpha = selectedOption == options[0];
+    formData.default = defaultValue;
+
+    try {
+      const response = await saveForm(formData);
+    } catch (e) {
+      console.log("failed to save form ", e);
+    }
+  };
+
+  // console.log(label);
+  // console.log(isRequired);
+  // console.log(choices);
+  // console.log(displayAlpha);
+  // console.log(defaultValue);
 
   return (
-    // this div handles the entire screen
     <div className="h-screen w-screen flex items-center justify-center">
-      <div className="justify-center items-center mx-auto w-1/2 mt-20 h-3/4 border-blue-200 border-2 rounded-lg overflow-hidden">
+      <div className="justify-center items-center mx-auto w-1/2 mt-20 h-5/6 border-blue-200 border-2 rounded-lg overflow-hidden">
         <div className="relative w-full py-3 bg-blue-200 opacity-3">
           <header className="text-cyan-700 text-xl px-4">
             <b>Field Builder</b>
           </header>
         </div>
 
-        <div className="flex items-center justify-left w-full p-2 px-5">
-          <div className="flex flex-col items-start justify-start gap-y-6 w-full p-5">
-            <Field label={"Label"} inputComponent={<InputBox onInputChange={(value) => handleFormChange("label", value)}/>} />
-            <Field
-              label={"Type"}
-              inputComponent={<Type customText={"A value is required"} />}
-            />
-            <Field label={"Default Value"} inputComponent={<InputBox />} />
-            <Field label={"Choices"} inputComponent={<MenuItems choices={formData.choices} onAddChoice={handleAddChoice}/>} 
-            />
-            <Field
-              label={"Order"}
-              inputComponent={
-                <DropdownMenu options={options} onSelect={handleOrderChange} />
-              }
-            />
+        {/* fill errors*/}
+        <div className="flex flex-col items-start justify-left w-full px-10 py-4 ">
+          <div className="pb-8 w-full">
+            {errors.length > 0 && <ErrorBox errors={errors} />}
+          </div>
 
-            <Field label="" inputComponent={
-            <div className="flex items-center justify-start gap-5 pb-6">
-              <ConfirmButton
-                text={"Save Changes"}
-                formData={formData}
-                onClick={handleConfirmButtonClick}
-                // handleButtonClick={() => {}}
+          <div className="flex items-center justify-start w-full">
+            <div className="flex flex-col items-start justify-start gap-y-6 w-full">
+              <Field
+                label={"Label"}
+                inputComponent={
+                  <InputBox
+                    validLabel={isLabelValid}
+                    label={label}
+                    setLabel={setLabel}
+                  />
+                }
               />
-              <span>or</span>
-              <RejectButton text={"Cancel"} handleButtonClick={() => {}} />
-            </div>}/>
+              <Field
+                label={"Type"}
+                inputComponent={
+                  <Type
+                    customText={"A value is required"}
+                    isRequired={isRequired}
+                    setIsRequired={setIsRequired}
+                  />
+                }
+              />
+              <Field
+                label={"Default Value"}
+                inputComponent={
+                  <InputBox
+                    validLabel={isDefaultValid}
+                    label={defaultValue}
+                    setLabel={setDefaultValue}
+                  />
+                }
+              />
+              <Field
+                label={"Choices"}
+                inputComponent={
+                  <MenuItems
+                    choices={choices}
+                    setChoices={setChoices}
+                    isChoicesValid={isChoicesValid}
+                  />
+                }
+              />
+              <Field
+                label={"Order"}
+                inputComponent={
+                  <DropdownMenu
+                    selectedOption={selectedOption}
+                    setSelectedOption={setSelectedOption}
+                    options={options}
+                  />
+                }
+              />
+
+              <Field
+                label=""
+                inputComponent={
+                  <div className="flex items-center justify-start gap-5 pb-6">
+                    <ConfirmButton
+                      text={"Save Changes"}
+                      onSubmit={handleSubmit}
+                    />
+                    <span>or</span>
+                    <RejectButton text={"Cancel"} onSubmit={clearSelection} />
+                  </div>
+                }
+              />
+            </div>
           </div>
         </div>
       </div>

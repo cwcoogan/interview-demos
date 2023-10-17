@@ -1,40 +1,23 @@
-import React, { useState } from "react";
-
-function MenuItems({choices, onAddChoice}) {
-  const [isMenuOpen, setMenuOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  const options = ["Option 1", "Option 2", "Option 3"];
-
-  const handleOptionSelect = (option) => {
-    setSelectedOption(option);
-    setMenuOpen(false);
-    onAddChoice(option);
-  };
-
+function MenuItems({ choices, setChoices, isChoicesValid }) {
   return (
-    <div className="relative rounded-md w-full">
-      <ul className="bg-white w-2/3 border-2 rounded-md h-24 overflow-auto">
-        {options.map((option, index) =>
-          option == selectedOption ? (
-            <li
-              className="bg-gray-200 py-1 px-4 cursor-pointer"
-              key={index}
-              onClick={() => handleOptionSelect(option)}
-            >
-              {option}
-            </li>
-          ) : (
-            <li
-              className="hover:bg-gray-200 py-1 px-4 cursor-pointer"
-              key={index}
-              onClick={() => handleOptionSelect(option)}
-            >
-              {option}
-            </li>
-          )
-        )}
-      </ul>
+    <div className="w-full">
+      {isChoicesValid ? (
+        <textarea
+          className="w-2/3 border-2 border-gray-200 rounded-md h-24 overflow-hidden px-2 py-2 outline-none text-lg text-black"
+          value={choices.join("\n")}
+          onChange={(e) => {
+            setChoices(e.target.value.split("\n"));
+          }}
+        ></textarea>
+      ) : (
+        <textarea
+          className="w-2/3 border-2 border-red-600 rounded-md h-24 overflow-hidden px-2 py-2 outline-none text-lg text-black"
+          value={choices.join("\n")}
+          onChange={(e) => {
+            setChoices(e.target.value.split("\n"));
+          }}
+        ></textarea>
+      )}
     </div>
   );
 }
