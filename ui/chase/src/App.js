@@ -23,19 +23,21 @@ function App() {
   // cookies
   let cookiesFormData = Cookies.get();
 
+  const [label, setLabel] = useState(cookiesFormData.label); // valid cookies
+  const [isRequired, setIsRequired] = useState(cookiesFormData.type == "true"); // validate cookies 
+  const [defaultValue, setDefaultValue] = useState(cookiesFormData.defaultValue);
+  const [choices, setChoices] = useState(cookiesFormData.choices.split(","));
+  const [selectedOption, setSelectedOption] = useState(parseInt(cookiesFormData.option));
+  
+  
   const [errors, setErrors] = useState([]);
   const [initialRender, setInitialRender] = useState(true);
-  const [label, setLabel] = useState(cookiesFormData.label); // valid cookies
   const [isLabelValid, setLabelValid] = useState(true);
-  const [isRequired, setIsRequired] = useState(cookiesFormData.type == "true"); // validate cookies 
-  const [choices, setChoices] = useState(cookiesFormData.choices.split(","));
   const [isChoicesValid, setValidChoices] = useState(true);
-  const [defaultValue, setDefaultValue] = useState(cookiesFormData.defaultValue);
   const [isDefaultValid, setDefaultValid] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(parseInt(cookiesFormData.option));
 
-
-  console.log(cookiesFormData.option);
+  
+  console.log(cookiesFormData.label);
   
   const options = [
     "Display choices by Alphabetical",
@@ -48,8 +50,8 @@ function App() {
   }, [label, isRequired, choices, defaultValue, selectedOption]);
 
   // validate label input
-  const validateInput = async () => {
-    if (initialRender) {
+  const validateInput = (type="notFromSubmit") => {
+    if (initialRender && type != "fromSubmit") {
       return;
     }
     const errorList = [];
@@ -99,23 +101,23 @@ function App() {
 
   const handleSubmit = async () => {
     setInitialRender(false);
-    const result = await validateInput();
+    const result = validateInput("fromSubmit");
     if (result == true) {
       return;
     }
     // validate edge case for < 50 choices && not in choices
-    if (!choices.includes(defaultValue) && choices.length < 50 && defaultValue.trim() != "") {
+    if (!choices.includes(defaultValue) && choices.length < 50 && defaultValue?.trim() != "" && defaultValue != undefined) {
       setInitialRender(false);
       setChoices(old => [defaultValue, ...old]);
-      if (label.trim() === "") {
+      if (label?.trim() === "" || label === undefined) {
         return;
       }
     }
 
     formData.label = label;
     formData.required = isRequired;
-    formData.choices = choices;
-    formData.displayAlpha = selectedOption == options[0];
+    formData.choices = selectedOption == 0 ? choices.sort() : choices;
+    formData.displayAlpha = selectedOption == 0;
     formData.default = defaultValue;
 
     try {
@@ -191,7 +193,7 @@ function App() {
               <Field
                 label={"Order"}
                 inputComponent={
-                  <DropdownMenu
+                  <DropdownMenu 
                     selectedOption={selectedOption}
                     setSelectedOption={setSelectedOption}
                     options={options}

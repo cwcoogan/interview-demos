@@ -9,7 +9,7 @@ function InputBox({ className, label, setLabel, validLabel }) {
             className="form-input rounded-lg border-2 border-gray-300 w-2/3 py-2 px-4 text-lg outline-none"
             type="text"
             name="label"
-            value={label}
+            value={label === undefined ? "" : label}
             onChange={(e) => setLabel(e.target.value)}
           />
         ) : (
@@ -18,7 +18,7 @@ function InputBox({ className, label, setLabel, validLabel }) {
             className="form-input rounded-lg border-2 border-red-500 w-2/3 py-2 px-4 text-lg outline-none"
             type="text"
             name="label"
-            value={label}
+            value={label === undefined ? "" : label}
             onChange={(e) => setLabel(e.target.value)}
           />
        

@@ -11,7 +11,7 @@ function MenuItems({ choices, setChoices, isChoicesValid }) {
         ></textarea>
       ) : (
         <textarea
-          className="w-2/3 border-2 border-red-600 rounded-md h-24 overflow-hidden px-2 py-2 outline-none text-lg text-black"
+          className="w-2/3 border-2 border-red-600 rounded-md h-24 overflow-hidden px-2 py-2 outline-none text-lg text-black break-normal"
           value={choices.join("\n")}
           onChange={(e) => {
             setChoices(e.target.value.split("\n"));
