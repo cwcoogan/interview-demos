@@ -10,6 +10,7 @@ import RejectButton from "./Components/Buttons/RejectButton/RejectButton";
 import saveForm from "./Requests/utils";
 import ErrorBox from "./Components/ErrorBox/ErrorBox";
 import Cookies from "js-cookie";
+import isEmpty from "./utils/utils";
 
 function App() {
   const formData = {
@@ -24,21 +25,21 @@ function App() {
   let cookiesFormData = Cookies.get();
 
   const [label, setLabel] = useState(cookiesFormData.label); // valid cookies
-  const [isRequired, setIsRequired] = useState(cookiesFormData.type == "true"); // validate cookies 
-  const [defaultValue, setDefaultValue] = useState(cookiesFormData.defaultValue);
+  const [isRequired, setIsRequired] = useState(cookiesFormData.type == "true"); // validate cookies
+  const [defaultValue, setDefaultValue] = useState(
+    cookiesFormData.defaultValue
+  );
   const [choices, setChoices] = useState(cookiesFormData.choices.split(","));
-  const [selectedOption, setSelectedOption] = useState(parseInt(cookiesFormData.option));
-  
-  
+  const [selectedOption, setSelectedOption] = useState(
+    parseInt(cookiesFormData.option)
+  );
+
   const [errors, setErrors] = useState([]);
   const [initialRender, setInitialRender] = useState(true);
   const [isLabelValid, setLabelValid] = useState(true);
   const [isChoicesValid, setValidChoices] = useState(true);
   const [isDefaultValid, setDefaultValid] = useState(true);
 
-  
-  console.log(cookiesFormData.label);
-  
   const options = [
     "Display choices by Alphabetical",
     "Display choices by Input",
@@ -50,41 +51,46 @@ function App() {
   }, [label, isRequired, choices, defaultValue, selectedOption]);
 
   // validate label input
-  const validateInput = (type="notFromSubmit") => {
+  const validateInput = (type = "notFromSubmit") => {
     if (initialRender && type != "fromSubmit") {
       return;
     }
     const errorList = [];
-    if (label.trim() === "" || label === null || label === undefined) {
+    if (isEmpty(label)) {
       setLabelValid(false);
       errorList.push("Label is required");
     } else setLabelValid(true);
 
     // validate no duplications
-    if (new Set(choices).size != choices.length) {
+    const duplicateCheck = new Set(choices).size != choices.length;
+    const lengthCheck = choices.length >= 50;
+
+    if (duplicateCheck || lengthCheck) {
+      if (duplicateCheck) {
+        errorList.push("Duplicate choices not allowed");
+      }
+      // validate 50 choice
+      if (lengthCheck) {
+        errorList.push("Cannot exceed 50 choices");
+      }
       setValidChoices(false);
-      errorList.push("Duplicate choices not allowed");
-    }
-    // validate 50 choice
-    else if (choices.length >= 50) {
-      setValidChoices(false);
-      errorList.push("Cannot exceed 50 choices");
     } else setValidChoices(true);
     setErrors(errorList);
-    return (errorList.length > 0);
+    return errorList.length > 0;
   };
-
 
   const saveCookies = () => {
     Cookies.set("label", label);
     Cookies.set("type", isRequired);
     Cookies.set("choices", choices.join(","));
-    Cookies.set("default_value", defaultValue);
-    if ((!selectedOption === 0 && !selectedOption === 1) || selectedOption === undefined) {
-      Cookies.set("option", 0);  
-    } else 
-    Cookies.set("option", selectedOption);
-  }
+    Cookies.set("defaultValue", defaultValue);
+    if (
+      (!selectedOption === 0 && !selectedOption === 1) ||
+      selectedOption === undefined
+    ) {
+      Cookies.set("option", 0);
+    } else Cookies.set("option", selectedOption);
+  };
 
   const clearSelection = () => {
     setLabel(" ");
@@ -106,9 +112,14 @@ function App() {
       return;
     }
     // validate edge case for < 50 choices && not in choices
-    if (!choices.includes(defaultValue) && choices.length < 50 && defaultValue?.trim() != "" && defaultValue != undefined) {
+    if (
+      !choices.includes(defaultValue) &&
+      choices.length < 50 &&
+      defaultValue?.trim() != "" &&
+      defaultValue != undefined
+    ) {
       setInitialRender(false);
-      setChoices(old => [defaultValue, ...old]);
+      setChoices((old) => [defaultValue, ...old]);
       if (label?.trim() === "" || label === undefined) {
         return;
       }
@@ -122,16 +133,11 @@ function App() {
 
     try {
       const response = await saveForm(formData);
-    } catch (e) {
-      console.log("failed to save form ", e);
-    }
+      if (response == -1) {
+        alert("internal error");
+      }
+    } catch (e) {}
   };
-
-  // console.log(label);
-  // console.log(isRequired);
-  // console.log(choices);
-  // console.log(displayAlpha);
-  // console.log(defaultValue);
 
   return (
     <div className="h-screen w-screen flex items-center justify-center">
@@ -193,7 +199,7 @@ function App() {
               <Field
                 label={"Order"}
                 inputComponent={
-                  <DropdownMenu 
+                  <DropdownMenu
                     selectedOption={selectedOption}
                     setSelectedOption={setSelectedOption}
                     options={options}

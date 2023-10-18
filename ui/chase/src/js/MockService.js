@@ -30,9 +30,11 @@ var FieldService =  {
 			  console.log("Post Data:", data);
 			} else {
 			  console.error("Error posting data");
+			  return -1;
 			}
 		  } catch {
 			console.error("Error posting data:");
+			return -1;
 		  }
 	}
 }

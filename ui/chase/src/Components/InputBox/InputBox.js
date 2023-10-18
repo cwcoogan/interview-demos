@@ -21,7 +21,6 @@ function InputBox({ className, label, setLabel, validLabel }) {
             value={label === undefined ? "" : label}
             onChange={(e) => setLabel(e.target.value)}
           />
-       
           </div>
         )}
       </label>
